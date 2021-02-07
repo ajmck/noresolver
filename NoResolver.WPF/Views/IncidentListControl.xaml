@@ -4,8 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NoResolver.WPF.Views"
+             xmlns:converters="clr-namespace:NoResolver.WPF.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <converters:EnumConverter x:Key="EnumConverter"></converters:EnumConverter>
+
+    </UserControl.Resources>
+    
     <Grid>
         
         <DataGrid ItemsSource="{Binding Incidents}"
@@ -16,12 +23,43 @@
                 SelectedItem="{Binding SelectedIncident}"
                 MouseDoubleClick="IncidentLineDoubleClick"
                   SelectionUnit="FullRow">
+
+
+            <!-- SLA colouring -->
+            <!-- Refer to Git wiki : Feature Implementation Tips : SLA Display -->
+            <!-- http://www.systanddeploy.com/2018/10/change-datagrid-rows-color-depending-of.html -->
+            <!-- BUG : this overwrites the style when selecting a row -->
+            <!-- Possibly need to make custom trigger for Property="IsSelected" - https://stackoverflow.com/questions/4104646 -->
+            <!-- alt: Just change the background colour for the SLA cell commented out below -->
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Background" Value="Black"></Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SLAStatus}" Value="None">
+                            <Setter Property="Foreground" Value="White"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding SLAStatus}" Value="OK">
+                            <Setter Property="Foreground" Value="Lime"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding SLAStatus}" Value="Warning">
+                            <Setter Property="Foreground" Value="Yellow"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding SLAStatus}" Value="Fail">
+                            <Setter Property="Foreground" Value="Red"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+
+
+            
             <DataGrid.Columns>
                 <DataGridTextColumn Header="INC" Binding="{Binding Incident_Number}" />
                 <DataGridTextColumn Header="Summary" Binding="{Binding Summary}"/>
                 <DataGridTextColumn Header="Load Status" Binding="{Binding Loaded}"/>
                 <DataGridTextColumn Header="INC Status" Binding="{Binding Status}"/>
                 <DataGridTextColumn Header="Work Notes" Binding="{Binding Work_Info.Count, FallbackValue=0}" />
+                <!--<DataGridTextColumn Header="SLA Expiry" Binding="{Binding SLATimer}" />-->  <!-- uncomment when the value exists in ExtendedIncident -->
                 <DataGridTextColumn Header="Assignee" Binding="{Binding Assignee}"/>
                 <DataGridTextColumn Header="Queue" Binding="{Binding Assigned_Group}" />
                 <DataGridTextColumn Header="Company" Binding="{Binding Company}" />

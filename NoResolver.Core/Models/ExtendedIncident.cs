@@ -193,5 +193,12 @@ namespace NoResolver.Core.Models
             }
             return base.Equals(obj);
         }
+
+
+
+        // WIP - SLA display - refer to Git Wiki/Feature Implementation Tips
+        public SLAValue SLAStatus { get; internal set; }
+        public DateTime? SLATimer { get; internal set; }
+
     }
 }

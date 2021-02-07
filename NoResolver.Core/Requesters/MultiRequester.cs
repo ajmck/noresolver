@@ -56,6 +56,8 @@ namespace NoResolver.Core.Requesters
             // although, it's fast enough as is, so no big deal
             _ = Task.Run(async () => await ITSMRequester.GetAllWorkInfo(Incidents));
 
+            _ = Task.Run(() => MakeUpFakeSLAs(Incidents));
+
             return Incidents;
         }
 
@@ -125,5 +127,25 @@ namespace NoResolver.Core.Requesters
             }
             _isLoadingFromSMF = false;
         }
+
+
+
+
+        /// <summary>
+        /// For testing purposes to put colours in the UI. Refer to wiki
+        /// </summary>
+        /// <param name="incidents"></param>
+        private static void MakeUpFakeSLAs(IList<ExtendedIncident> incidents)
+        {
+            int sla = 0;
+            var rng = new System.Random();
+            foreach (var i in incidents)
+            {
+                sla = rng.Next(4);
+                i.SLAStatus = (SLAValue)sla;
+            }
+        }
+
+
     }
 }
